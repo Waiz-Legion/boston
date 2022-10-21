@@ -1,14 +1,15 @@
 import streamlit as st
 import pandas as pd
 import time
+import pickle
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor
 
 
 st.title("Case Count Predictor")
 
-classifier = XGBRegressor()
-classifier.load_model('model.json')
+classifier = pickle.load(open('pipe.pkl', 'rb'))
+#classifier.load_model('model.json')
 
 
 def prediction(Date, District, Day):
@@ -281,7 +282,7 @@ def main():
         with st.spinner('Calculating...'):
             time.sleep(2)
         with st.spinner('Predicting'):
-            time.sleep(2)   
+            time.sleep(3)   
         st.success('Number of crimes in district {} is predicted to be {}'.format(District, result))
         
 if __name__ == "__main__":
