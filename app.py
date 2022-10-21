@@ -1,22 +1,15 @@
 import streamlit as st
 import pandas as pd
 import time
-from sklearn.model_selection import train_test_split as tts
-
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor
 
 
 st.title("Case Count Predictor")
-df_reg = pd.read_csv('final_dataframe.csv')
-x = df_reg.drop('case_count', axis = 1)
-y = df_reg['case_count']
-scaled = StandardScaler()
-x = scaled.fit_transform(x)
-x_train, x_test, y_train, y_test = tts(x, y, test_size = 0.2, random_state = 142)
-#classifier = XGBRegressor()
-#classifier.load_model('model.json')
-xgb = XGBRegressor(n_estimators = 200).fit(x_train, y_train)
+
+classifier = XGBRegressor()
+classifier.load_model('model.json')
+
 
 def prediction(Date, District, Day):
     occurred_on_date = pd.to_datetime(Date).toordinal()
@@ -263,12 +256,12 @@ def prediction(Date, District, Day):
         day_5 = 0
         day_6 = 0
         day_7 = 1
-    prediction = xgb.predict(scaled.transform([[occurred_on_date, D_A1, D_A15,
+    prediction = classifier.predict([[occurred_on_date, D_A1, D_A15,
                                       D_A7, D_B2, D_B3, D_C11, D_C6,
                                       D_D14, D_D4, D_E13, D_E18,
                                       D_E5, D_External, day_1, day_2,
                                       day_3, day_4, day_5, day_6,
-                                      day_7]]))
+                                      day_7]])
      
     
     return int(prediction), District
