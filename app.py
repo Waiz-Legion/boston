@@ -6,7 +6,7 @@ from xgboost import XGBRegressor
 
 
 st.title("Case Count Predictor")
-df_reg = pd.read_csv('final_dataframe')
+df_reg = pd.read_csv('final_dataframe.csv')
 x = df_reg.drop('case_count', axis = 1)
 y = df_reg['case_count']
 scaled = StandardScaler()
