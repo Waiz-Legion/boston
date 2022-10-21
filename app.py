@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import time
+from sklearn.model_selection import train_test_split as tts
+
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor
 
