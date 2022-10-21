@@ -1,29 +1,9 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import time
-import seaborn as sb
-import copy
 from sklearn.preprocessing import StandardScaler
-import pandas_profiling
-import matplotlib.pyplot as plt
-from imblearn.over_sampling import SMOTE
-from sklearn.preprocessing import OneHotEncoder as ohe, LabelEncoder as le
-import warnings
-from tqdm import tqdm
-import pickle
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LinearRegression
 from xgboost import XGBRegressor
-from lightgbm import LGBMRegressor
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import r2_score, mean_absolute_error
-from sklearn.model_selection import train_test_split as tts
-from sklearn.metrics import classification_report as cr
-from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
-from hyperopt import hp,fmin,tpe,STATUS_OK,Trials
-import optuna
-from tpot import TPOTRegressor
+
 
 st.title("Case Count Predictor")
 df_reg = pd.read_csv('final_dataframe')
