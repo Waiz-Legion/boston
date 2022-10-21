@@ -1,16 +1,46 @@
 import streamlit as st
 import pandas as pd
-
-
+import numpy as np
+import time
+import seaborn as sb
+import copy
+from sklearn.preprocessing import StandardScaler
+import pandas_profiling
+import matplotlib.pyplot as plt
+from imblearn.over_sampling import SMOTE
+from sklearn.preprocessing import OneHotEncoder as ohe, LabelEncoder as le
+import warnings
+from tqdm import tqdm
+import pickle
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LinearRegression
 from xgboost import XGBRegressor
+from lightgbm import LGBMRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import r2_score, mean_absolute_error
+from sklearn.model_selection import train_test_split as tts
+from sklearn.metrics import classification_report as cr
+from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
+from hyperopt import hp,fmin,tpe,STATUS_OK,Trials
+import optuna
+from tpot import TPOTRegressor
 
 st.title("Case Count Predictor")
-classifier = XGBRegressor()
-classifier.load_model('model.json')
+df_reg = pd.read_csv('final_dataframe')
+x = df_reg.drop('case_count', axis = 1)
+y = df_reg['case_count']
+scaled = StandardScaler()
+x = scaled.fit_transform(x)
+x_train, x_test, y_train, y_test = tts(x, y, test_size = 0.2, random_state = 142)
+#classifier = XGBRegressor()
+#classifier.load_model('model.json')
+xgb = XGBRegressor(n_estimators = 200).fit(x_train, y_train)
 
-@st.cache
 def prediction(Date, District, Day):
     occurred_on_date = pd.to_datetime(Date).toordinal()
+    #st.text(occurred_on_date)
+    #scaled = StandardScaler()
+    #occurred_on_date = scaled.transform(occurred_on_date)
     #  B2, C11, A1, E18, D4, B3, D14, A7,, E5, C6, E13, A15, External 
     if District == 'B2':
         D_B2 = 1
@@ -251,15 +281,15 @@ def prediction(Date, District, Day):
         day_5 = 0
         day_6 = 0
         day_7 = 1
-    prediction = classifier.predict([[occurred_on_date, D_A1, D_A15,
+    prediction = xgb.predict(scaled.transform([[occurred_on_date, D_A1, D_A15,
                                       D_A7, D_B2, D_B3, D_C11, D_C6,
                                       D_D14, D_D4, D_E13, D_E18,
                                       D_E5, D_External, day_1, day_2,
                                       day_3, day_4, day_5, day_6,
-                                      day_7]])
+                                      day_7]]))
      
     
-    return prediction 
+    return int(prediction), District
 def main():       
     Date = st.date_input("Enter Date")
     District = st.selectbox('Select District',
@@ -267,12 +297,17 @@ def main():
                              "E13", "A15", "External")) 
     Day = st.selectbox("Select Day of week", ('Monday', "Tuesday", "Wednesday", "Thursday",
                                               "Friday","Saturday","Sunday")) 
+    
     result = ""
       
     # when 'Predict' is clicked, make the prediction and store it 
     if st.button("Predict"): 
-        result = prediction(Date, District, Day) 
-        st.success('{}'.format(result))
+        result = prediction(Date, District, Day)[0]
+        with st.spinner('Calculating...'):
+            time.sleep(2)
+        with st.spinner('Predicting'):
+            time.sleep(2)   
+        st.success('Number of crimes in district {} is predicted to be {}'.format(District, result))
         
 if __name__ == "__main__":
     main()
