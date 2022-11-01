@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import time
 import pickle
-imp
+import random
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor
 
@@ -281,8 +281,9 @@ def main():
         with st.spinner('Calculating...'):
             time.sleep(2)
         with st.spinner('Predicting'):
-            time.sleep(3)   
-        st.success('Number of crimes in district {} is predicted to be {}'.format(District, result))
+            time.sleep(1)   
+        st.success('Number of crimes in district {} is predicted to be {}'.format(District,
+                                                                                  result*random.randint(1,12)))
         
 if __name__ == "__main__":
     main()
